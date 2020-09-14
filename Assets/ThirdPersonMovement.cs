@@ -6,9 +6,14 @@ using System.Collections.Specialized;
 using System.Security.Cryptography;
 using System.Threading;
 using UnityEngine;
+using System;
 
 public class ThirdPersonMovement : MonoBehaviour
 {
+    public event Action Idle = delegate { };
+    public event Action StartRunning = delegate { };
+    public event Action Jumping = delegate { };
+
     public CharacterController controller;
     public Transform cam;
 
@@ -24,9 +29,15 @@ public class ThirdPersonMovement : MonoBehaviour
 
     float turnSmoothVelocity;
     public float turnSmoothTime = 0.1f;
+    bool _isMoving = false;
+    bool _isJumping = false;
 
-    // Update is called once per frame
-    void Update()
+    private void Start()
+    {
+        Idle?.Invoke();
+    }
+
+    private void Update()
     {
         //jump
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
@@ -50,6 +61,7 @@ public class ThirdPersonMovement : MonoBehaviour
 
         if (direction.magnitude >= 0.1f)
         {
+            CheckIfStartedMoving();
             float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + cam.eulerAngles.y;
             float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
             transform.rotation = Quaternion.Euler(0f, angle, 0f);
@@ -57,6 +69,44 @@ public class ThirdPersonMovement : MonoBehaviour
             Vector3 moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
             controller.Move(moveDir.normalized * speed * Time.deltaTime);
         }
+        else
+        {
+            CheckIfStoppedMoving();
+        }
+
+    }
+
+    private void CheckIfStartedMoving()
+    {
+        if (_isMoving == false)
+        {
+            StartRunning?.Invoke();
+            Debug.Log("Started");
+        }
+
+        _isMoving = true;
+    }
+
+    private void CheckIfStoppedMoving()
+    {
+        if (_isMoving == true)
+        {
+            Idle?.Invoke();
+            Debug.Log("Stopped");
+        }
+
+        _isMoving = false;
+    }
+
+    private void CheckIfStartedJumping()
+    {
+        if (_isJumping == true)
+        {
+            Jumping?.Invoke();
+            Debug.Log("Jumped");
+        }
+
+        _isJumping = false;
     }
 }
 
