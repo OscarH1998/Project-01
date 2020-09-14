@@ -8,11 +8,14 @@ using System.Threading;
 using UnityEngine;
 using System;
 
+[RequireComponent (typeof(Collider))]
 public class ThirdPersonMovement : MonoBehaviour
 {
+
     public event Action Idle = delegate { };
     public event Action StartRunning = delegate { };
-    public event Action Jumping = delegate { };
+    public event Action StartJumping = delegate { };
+    public event Action StartFalling = delegate { };
 
     public CharacterController controller;
     public Transform cam;
@@ -32,6 +35,8 @@ public class ThirdPersonMovement : MonoBehaviour
     bool _isMoving = false;
     bool _isJumping = false;
 
+    public float canJump = 0f;
+    
     private void Start()
     {
         Idle?.Invoke();
@@ -39,7 +44,6 @@ public class ThirdPersonMovement : MonoBehaviour
 
     private void Update()
     {
-        //jump
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
 
         if (isGrounded && velocity.y < 0)
@@ -50,7 +54,12 @@ public class ThirdPersonMovement : MonoBehaviour
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2 * gravity);
-        }
+            canJump = Time.time + 3f;
+            _isJumping = true;
+            CheckIfStartedJumping();
+            StartCoroutine(JumpToFall());
+        }  
+
         //gravity
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
@@ -69,11 +78,17 @@ public class ThirdPersonMovement : MonoBehaviour
             Vector3 moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
             controller.Move(moveDir.normalized * speed * Time.deltaTime);
         }
+
         else
         {
             CheckIfStoppedMoving();
         }
+    }
 
+    IEnumerator JumpToFall()
+    {
+        yield return new WaitForSeconds(1.5f);
+        CheckIfStartedFalling();
     }
 
     private void CheckIfStartedMoving()
@@ -102,11 +117,19 @@ public class ThirdPersonMovement : MonoBehaviour
     {
         if (_isJumping == true)
         {
-            Jumping?.Invoke();
+            StartJumping?.Invoke();
             Debug.Log("Jumped");
         }
-
         _isJumping = false;
+    }
+
+    private void CheckIfStartedFalling()
+    {
+        if (_isJumping == false)
+        {
+            StartFalling?.Invoke();
+            Debug.Log("Falling");
+        }
     }
 }
 

@@ -28,16 +28,29 @@ public class PlayerCharacterAnimator : MonoBehaviour
     {
         _thirdPersonMovement.Idle += OnIdle;
         _thirdPersonMovement.StartRunning += OnStartRunning;
+        _thirdPersonMovement.StartJumping += OnStartJumping;
+        _thirdPersonMovement.StartFalling += OnStartFalling;
     }
 
     private void OnDisable()
     {
         _thirdPersonMovement.Idle -= OnIdle;
         _thirdPersonMovement.StartRunning -= OnStartRunning;
+        _thirdPersonMovement.StartJumping -= OnStartJumping;
+        _thirdPersonMovement.StartFalling -= OnStartFalling;
     }
 
     private void OnStartRunning()
     {
         _animator.CrossFadeInFixedTime(RunState, .2f);
+    }
+
+    private void OnStartJumping()
+    {
+        _animator.CrossFadeInFixedTime(JumpState, .2f);
+    }
+    private void OnStartFalling()
+    {
+        _animator.CrossFadeInFixedTime(FallState, .2f);
     }
 }
