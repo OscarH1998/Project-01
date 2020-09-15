@@ -6,6 +6,7 @@ using System.Collections.Specialized;
 using System.Security.Cryptography;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using System;
 
 [RequireComponent (typeof(Collider))]
@@ -26,6 +27,9 @@ public class ThirdPersonMovement : MonoBehaviour
     Vector3 velocity;
     bool isGrounded;
 
+    public float sprintspeed;
+    public MovementState MovementType;
+
     public Transform groundCheck;
     public float groundDistance = 0.4f;
     public LayerMask groundMask;
@@ -35,7 +39,12 @@ public class ThirdPersonMovement : MonoBehaviour
     bool _isMoving = false;
     bool _isJumping = false;
 
-    public float canJump = 0f;
+    private float canJump = 0f;
+
+    public enum MovementState
+    {
+        Idle,Running,Sprinting,Jumping
+    }
     
     private void Start()
     {
@@ -51,14 +60,14 @@ public class ThirdPersonMovement : MonoBehaviour
             velocity.y = -2f;
         }
 
-        if (Input.GetButtonDown("Jump") && isGrounded)
+        if (Input.GetButtonDown("Jump") && isGrounded && Time.time > canJump)
         {
-            velocity.y = Mathf.Sqrt(jumpHeight * -2 * gravity);
             canJump = Time.time + 3f;
+            velocity.y = Mathf.Sqrt(jumpHeight * -2 * gravity);
             _isJumping = true;
             CheckIfStartedJumping();
             StartCoroutine(JumpToFall());
-        }  
+        }
 
         //gravity
         velocity.y += gravity * Time.deltaTime;
@@ -82,6 +91,47 @@ public class ThirdPersonMovement : MonoBehaviour
         else
         {
             CheckIfStoppedMoving();
+        }
+
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            Sprint();
+        }
+
+        else
+        {
+            speed = 6f;
+        }
+
+        if (Input.GetKey(KeyCode.Backspace))
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
+    }
+    private void Sprint()
+    {
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            MovementType = MovementState.Sprinting;
+            speed = sprintspeed;
+        }
+
+        else
+        {
+            if (_isMoving == false)
+            {
+                MovementType = MovementState.Idle;
+            }
+
+            if (_isMoving == true)
+            {
+                MovementType = MovementState.Running;
+            }
         }
     }
 

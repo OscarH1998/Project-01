@@ -12,6 +12,10 @@ public class PlayerCharacterAnimator : MonoBehaviour
     const string JumpState = "Jumping";
     const string FallState = "Falling";
 
+    public AudioSource run = null;
+    public AudioSource jump = null;
+    public AudioSource land = null;
+
     Animator _animator = null;
 
     private void Awake()
@@ -43,14 +47,17 @@ public class PlayerCharacterAnimator : MonoBehaviour
     private void OnStartRunning()
     {
         _animator.CrossFadeInFixedTime(RunState, .2f);
+        run.Play();
     }
 
     private void OnStartJumping()
     {
         _animator.CrossFadeInFixedTime(JumpState, .2f);
+        jump.Play();
     }
     private void OnStartFalling()
     {
         _animator.CrossFadeInFixedTime(FallState, .2f);
+        land.Play();
     }
 }
