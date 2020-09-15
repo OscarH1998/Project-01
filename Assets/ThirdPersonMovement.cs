@@ -17,9 +17,17 @@ public class ThirdPersonMovement : MonoBehaviour
     public event Action StartRunning = delegate { };
     public event Action StartJumping = delegate { };
     public event Action StartFalling = delegate { };
+    public event Action StartTeleport = delegate { };
 
     public CharacterController controller;
     public Transform cam;
+
+    [SerializeField] Transform rayStart = null;
+    [SerializeField] GameObject player = null;
+    [SerializeField] float _teleportCheck = 12f;
+    [SerializeField] float distance = 8f;
+    public float radius;
+    public AudioSource teleport = null;
 
     public float speed = 6;
     public float gravity = -9.81f;
@@ -38,6 +46,7 @@ public class ThirdPersonMovement : MonoBehaviour
     public float turnSmoothTime = 0.1f;
     bool _isMoving = false;
     bool _isJumping = false;
+    bool _isTeleport = false;
 
     private float canJump = 0f;
 
@@ -92,6 +101,13 @@ public class ThirdPersonMovement : MonoBehaviour
         {
             CheckIfStoppedMoving();
         }
+        
+        if (Input.GetKey(KeyCode.Mouse0))
+        {
+            _isTeleport = true;
+            OnTeleport();
+            CheckIfStartedTeleport();
+        }
 
         if (Input.GetKey(KeyCode.LeftShift))
         {
@@ -113,6 +129,7 @@ public class ThirdPersonMovement : MonoBehaviour
             Application.Quit();
         }
     }
+   
     private void Sprint()
     {
         if (Input.GetKey(KeyCode.LeftShift))
@@ -133,6 +150,29 @@ public class ThirdPersonMovement : MonoBehaviour
                 MovementType = MovementState.Running;
             }
         }
+    }
+
+    private void OnTeleport()
+    {
+        RaycastHit hit;
+        Vector3 destination = controller.transform.position + controller.transform.forward * distance;
+
+        if (Physics.Linecast(controller.transform.position, destination, out hit))
+        {
+            destination = controller.transform.position + controller.transform.forward * (hit.distance - 1f);
+        }
+
+        if (Physics.Raycast(destination, -Vector3.up, out hit))
+        {
+            destination = hit.point;
+            destination.y = 0.5f;
+            transform.position = destination;
+        }
+
+        Vector3 shockwavePos = transform.position;
+        Collider[] colliders = Physics.OverlapSphere(shockwavePos, radius);
+        teleport.Play();
+
     }
 
     IEnumerator JumpToFall()
@@ -180,6 +220,16 @@ public class ThirdPersonMovement : MonoBehaviour
             StartFalling?.Invoke();
             Debug.Log("Falling");
         }
+    }
+
+    private void CheckIfStartedTeleport()
+    {
+        if (_isTeleport == true)
+        {
+            StartTeleport?.Invoke();
+            Debug.Log("Teleport");
+        }
+        _isTeleport=false;
     }
 }
 

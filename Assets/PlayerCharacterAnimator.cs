@@ -11,10 +11,12 @@ public class PlayerCharacterAnimator : MonoBehaviour
     const string RunState = "Run";
     const string JumpState = "Jumping";
     const string FallState = "Falling";
+    const string TeleportState = "Teleport";
 
     public AudioSource run = null;
     public AudioSource jump = null;
     public AudioSource land = null;
+
 
     Animator _animator = null;
 
@@ -34,6 +36,7 @@ public class PlayerCharacterAnimator : MonoBehaviour
         _thirdPersonMovement.StartRunning += OnStartRunning;
         _thirdPersonMovement.StartJumping += OnStartJumping;
         _thirdPersonMovement.StartFalling += OnStartFalling;
+        _thirdPersonMovement.StartTeleport += OnStartTeleport;
     }
 
     private void OnDisable()
@@ -42,6 +45,7 @@ public class PlayerCharacterAnimator : MonoBehaviour
         _thirdPersonMovement.StartRunning -= OnStartRunning;
         _thirdPersonMovement.StartJumping -= OnStartJumping;
         _thirdPersonMovement.StartFalling -= OnStartFalling;
+        _thirdPersonMovement.StartTeleport -= OnStartTeleport;
     }
 
     private void OnStartRunning()
@@ -59,5 +63,11 @@ public class PlayerCharacterAnimator : MonoBehaviour
     {
         _animator.CrossFadeInFixedTime(FallState, .2f);
         land.Play();
+    }
+
+    private void OnStartTeleport()
+    {
+        _animator.CrossFadeInFixedTime(TeleportState, .2f);
+
     }
 }
