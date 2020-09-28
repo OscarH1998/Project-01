@@ -48,7 +48,8 @@ public class ThirdPersonMovement : MonoBehaviour
     bool _isJumping = false;
     bool _isTeleport = false;
 
-    private float canJump = 0f;
+    private float jumpCooldown = 0f;
+    private float telCooldown = 0f;
 
     public enum MovementState
     {
@@ -69,9 +70,9 @@ public class ThirdPersonMovement : MonoBehaviour
             velocity.y = -2f;
         }
 
-        if (Input.GetButtonDown("Jump") && isGrounded && Time.time > canJump)
+        if (Input.GetButtonDown("Jump") && isGrounded && Time.time > jumpCooldown)
         {
-            canJump = Time.time + 3f;
+            jumpCooldown = Time.time + 3f;
             velocity.y = Mathf.Sqrt(jumpHeight * -2 * gravity);
             _isJumping = true;
             CheckIfStartedJumping();
@@ -102,11 +103,13 @@ public class ThirdPersonMovement : MonoBehaviour
             CheckIfStoppedMoving();
         }
         
-        if (Input.GetKey(KeyCode.Mouse0))
+        if (Input.GetKey(KeyCode.Mouse0) && Time.time > jumpCooldown)
         {
             _isTeleport = true;
             OnTeleport();
             CheckIfStartedTeleport();
+            //jumpCooldown = Time.time + 3f;
+            StartCoroutine(TeleToRun());
         }
 
         if (Input.GetKey(KeyCode.LeftShift))
@@ -175,11 +178,27 @@ public class ThirdPersonMovement : MonoBehaviour
 
     }
 
+    IEnumerator TeleToRun()
+    {
+        yield return new WaitForSeconds(.8f);
+        CheckIfStoppedMoving();
+        CheckIfStartedMoving();
+    }
+
     IEnumerator JumpToFall()
     {
         yield return new WaitForSeconds(1.5f);
         CheckIfStartedFalling();
+        StartCoroutine(FallToRun());
     }
+
+    IEnumerator FallToRun()
+    {
+        yield return new WaitForSeconds(0.7f);
+        CheckIfStoppedMoving();
+        CheckIfStartedMoving();
+    }
+
 
     private void CheckIfStartedMoving()
     {
@@ -221,7 +240,7 @@ public class ThirdPersonMovement : MonoBehaviour
             Debug.Log("Falling");
         }
     }
-
+   
     private void CheckIfStartedTeleport()
     {
         if (_isTeleport == true)

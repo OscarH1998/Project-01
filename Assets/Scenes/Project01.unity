@@ -3232,7 +3232,7 @@ MonoBehaviour:
   rayStart: {fileID: 1500576310}
   player: {fileID: 1500576309}
   _teleportCheck: 12
-  distance: 8
+  distance: 3
   radius: 14
   teleport: {fileID: 1924956845}
   speed: 6
@@ -3263,7 +3263,7 @@ CharacterController:
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 1.5, z: 0}
+  m_Center: {x: 0, y: 1.55, z: 0}
 --- !u!95 &1500576313
 Animator:
   serializedVersion: 3
@@ -3296,7 +3296,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _thirdPersonMovement: {fileID: 1500576311}
-  run: {fileID: 1290485559}
+  run: {fileID: 0}
   jump: {fileID: 907785094}
   land: {fileID: 1107146246}
 --- !u!1 &1560580297
@@ -4573,7 +4573,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1825786919}
-  m_LocalRotation: {x: 0.054509837, y: -0.0000030310264, z: 0.00000016546674, w: 0.9985132}
+  m_LocalRotation: {x: 0.05450986, y: -0.0000029965302, z: 0.00000016358364, w: 0.9985132}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:

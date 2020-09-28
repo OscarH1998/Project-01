@@ -51,7 +51,7 @@ public class PlayerCharacterAnimator : MonoBehaviour
     private void OnStartRunning()
     {
         _animator.CrossFadeInFixedTime(RunState, .2f);
-        run.Play();
+        //run.Play();
     }
 
     private void OnStartJumping()
