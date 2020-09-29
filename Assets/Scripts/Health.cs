@@ -9,31 +9,19 @@ public class Health : MonoBehaviour
     public int maxHealth { get; private set; } = 100;
     public int currentHealth { get; private set; } = 100;
 
-    //[SerializeField] AudioSource PlayerDamaged = null;
+    [SerializeField] AudioSource PlayerDamaged = null;
 
     public event Action<int> HealthChanged = delegate { };
 
     public void TakeDamage(int damage)
     {
-       // PlayerDamaged.Play();
+  
         currentHealth -= damage;
         HealthChanged.Invoke(currentHealth);
+        PlayerDamaged.Play();
         if (currentHealth <= 0)
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        }
-    }
-
-    void OnTriggerEnter(Collider other)
-    {
-        if (other.gameObject.tag == "HealthPickup")
-        {
-            if (currentHealth < maxHealth)
-            {
-                currentHealth = maxHealth;
-                HealthChanged.Invoke(currentHealth);
-                other.gameObject.SetActive(false);
-            }
         }
     }
     
