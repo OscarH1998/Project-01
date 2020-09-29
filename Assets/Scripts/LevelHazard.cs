@@ -5,7 +5,7 @@ using UnityEngine;
 public class LevelHazard : MonoBehaviour
 {
     [SerializeField] Health _player = null;
-    //[SerializeField] AudioSource death = null;
+    [SerializeField] AudioSource death = null;
     //[SerializeField] ParticleSystem particles = null;
 
     public Rigidbody enemy;
@@ -27,8 +27,8 @@ public class LevelHazard : MonoBehaviour
         {
             _player.TakeDamage(20);
             //particles.Play();
-            //death.Play();
-            Invoke("Die", .05f);
+            death.Play();
+            Invoke("Die", .5f);
         }
     }
 
